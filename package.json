@@ -5,7 +5,7 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vue-tsc && vite build && electron-builder",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,5 +19,31 @@
     "vite": "^4.3.9",
     "vite-plugin-electron": "^0.12.0",
     "vue-tsc": "^1.4.2"
+  },
+  "build": {
+    "appId": "your.app.id",
+    "productName": "Your App Name",
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "category": "your.app.category"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Your App Name"
+    }
   }
 }

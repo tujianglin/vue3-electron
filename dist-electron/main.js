@@ -1,12 +1,1 @@
-"use strict";
-const electron = require("electron");
-electron.app.whenReady().then(() => {
-  const win = new electron.BrowserWindow({
-    title: "Main window"
-  });
-  if (process.env.VITE_DEV_SERVER_URL) {
-    win.loadURL(process.env.VITE_DEV_SERVER_URL);
-  } else {
-    win.loadFile("dist/index.html");
-  }
-});
+"use strict";const n=require("electron");n.app.whenReady().then(()=>{const e=new n.BrowserWindow({title:"Main window"});process.env.VITE_DEV_SERVER_URL?e.loadURL(process.env.VITE_DEV_SERVER_URL):e.loadFile("dist/index.html")});
