@@ -1,0 +1,23 @@
+{
+  "name": "my-vue-app",
+  "private": true,
+  "version": "0.0.0",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "electron": "^25.2.0",
+    "electron-builder": "^24.4.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.9",
+    "vite-plugin-electron": "^0.12.0",
+    "vue-tsc": "^1.4.2"
+  }
+}
