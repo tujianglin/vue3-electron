@@ -115,7 +115,7 @@ const pkg = {
       "prettier --write",
       "stylelint --fix"
     ],
-    "*.{scss,less,styl,html}": [
+    "*.{scss,less,styl}": [
       "stylelint --fix",
       "prettier --write"
     ],
