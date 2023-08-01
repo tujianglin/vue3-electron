@@ -2,13 +2,8 @@
   import { defineComponent } from 'vue';
   export default defineComponent({
     setup() {
-      return () => <div>1111</div>;
+      return () => <div>111</div>;
     },
   });
 </script>
-<style lang="scss">
-  #app {
-    width: 100%;
-    height: 100%;
-  }
-</style>
+<style lang="less" scoped></style>
