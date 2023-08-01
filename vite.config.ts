@@ -1,16 +1,22 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
-import vue from '@vitejs/plugin-vue';
-import vueJsx from '@vitejs/plugin-vue-jsx';
-import electron from 'vite-plugin-electron';
-import renderer from 'vite-plugin-electron-renderer';
+import { createVitePlugins } from './build/vite';
+import { wrapperEnv } from './build/utils';
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir);
 }
-export default defineConfig(({}) => {
+export default defineConfig(({ mode, command }) => {
+  const root = process.cwd();
+  const env = loadEnv(mode, root);
+  const viteEnv = wrapperEnv(env);
+  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_DROP_CONSOLE } = viteEnv;
+
+  const isBuild = command === 'build';
   return {
+    base: VITE_PUBLIC_PATH,
+    root,
     server: {
-      port: 3400,
+      port: VITE_PORT,
       host: true,
     },
     resolve: {
@@ -29,6 +35,9 @@ export default defineConfig(({}) => {
         },
       ],
     },
+    esbuild: {
+      pure: VITE_DROP_CONSOLE ? ['console.log', 'debugger'] : [],
+    },
     build: {
       cssTarget: 'chrome80',
       chunkSizeWarningLimit: 2000,
@@ -38,20 +47,6 @@ export default defineConfig(({}) => {
         scss: {},
       },
     },
-    plugins: [
-      vue(),
-      vueJsx(),
-      electron({
-        entry: 'electron/main.ts',
-        vite: {
-          build: {
-            rollupOptions: {
-              external: ['serialport', 'sqlite3'],
-            },
-          },
-        },
-      }),
-      renderer(),
-    ],
+    plugins: createVitePlugins(viteEnv, isBuild),
   };
 });
