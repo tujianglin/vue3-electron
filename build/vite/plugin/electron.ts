@@ -13,7 +13,7 @@ export function configElectronPlugin() {
         },
       },
       {
-        entry: ['electron/config/menu.ts'],
+        entry: ['electron/config/menu.ts', 'electron/config/windowsConfig.ts', 'electron/config/const.ts'],
         vite: {
           build: {
             outDir: 'dist-electron/config',

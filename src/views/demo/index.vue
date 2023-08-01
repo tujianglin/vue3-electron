@@ -3,7 +3,11 @@
   import { ElButton } from 'element-plus';
   export default defineComponent({
     setup() {
-      return () => <ElButton type={'danger'}>111</ElButton>;
+      return () => (
+        <ElButton type={'danger'} onClick={() => process.crash()}>
+          模拟崩溃
+        </ElButton>
+      );
     },
   });
 </script>
