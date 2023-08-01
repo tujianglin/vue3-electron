@@ -1,4 +1,4 @@
-import { RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
+import { RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router';
 import type { App } from 'vue';
 import routeModuleList from './routes';
 
@@ -6,7 +6,7 @@ import routeModuleList from './routes';
  * 创建路由
  */
 export const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: routeModuleList as unknown as RouteRecordRaw[],
 });
 

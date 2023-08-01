@@ -22,6 +22,9 @@ dependencies:
     version: 4.2.4(vue@3.3.4)
 
 devDependencies:
+  '@babel/plugin-syntax-dynamic-import':
+    specifier: ^7.8.3
+    version: 7.8.3(@babel/core@7.22.9)
   '@commitlint/cli':
     specifier: ^17.6.7
     version: 17.6.7
@@ -43,9 +46,6 @@ devDependencies:
   '@vitejs/plugin-vue-jsx':
     specifier: ^3.0.1
     version: 3.0.1(vite@4.4.7)(vue@3.3.4)
-  consola:
-    specifier: ^3.2.3
-    version: 3.2.3
   conventional-changelog-cli:
     specifier: ^3.0.0
     version: 3.0.0
@@ -58,6 +58,9 @@ devDependencies:
   electron-builder:
     specifier: ^24.4.0
     version: 24.6.3
+  electron-devtools-vendor:
+    specifier: ^1.2.0
+    version: 1.2.0
   eslint:
     specifier: ^8.45.0
     version: 8.45.0
@@ -366,6 +369,15 @@ packages:
     hasBin: true
     dependencies:
       '@babel/types': 7.22.5
+
+  /@babel/plugin-syntax-dynamic-import@7.8.3(@babel/core@7.22.9):
+    resolution: {integrity: sha512-5gdGbFon+PszYzqs83S3E5mpi7/y/8M9eC90MRTZfduQOYW76ig6SOSPNe41IG5LoP3FGBn2N0RjVDSQiS94kQ==}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': 7.22.9
+      '@babel/helper-plugin-utils': 7.22.5
+    dev: true
 
   /@babel/plugin-syntax-jsx@7.22.5(@babel/core@7.22.9):
     resolution: {integrity: sha512-gvyP4hZrgrs/wWMaocvxZ44Hw0b3W8Pe+cMxc8V1ULQ07oh8VNbIRaoD1LRZVTvD+0nieDKjfgKg89sD7rrKrg==}
@@ -2247,11 +2259,6 @@ packages:
       typescript: 4.9.5
     dev: true
 
-  /consola@3.2.3:
-    resolution: {integrity: sha512-I5qxpzLv+sJhTVEoLYNcTW+bThDCPsit0vLNKShZx6rLtpilNpmmeTPaeqJb9ZE9dV3DGaeby6Vuhrw38WjeyQ==}
-    engines: {node: ^14.18.0 || >=16.10.0}
-    dev: true
-
   /conventional-changelog-angular@5.0.13:
     resolution: {integrity: sha512-i/gipMxs7s8L/QeuavPF2hLnJgH6pEZAttySB6aiQLWcX3puWDL3ACVmvBhJGxnAy52Qc15ua26BufY6KpmrVA==}
     engines: {node: '>=10'}
@@ -2787,6 +2794,10 @@ packages:
       yargs: 17.7.2
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /electron-devtools-vendor@1.2.0:
+    resolution: {integrity: sha512-w+P7TaX7gD8RFvIeUsJZZx2+hRNjcq8GQmSI/I+OgC+71qbfaBwKZ6S8BwV1bQjW9Eu1dXx0aRWAlAZ3b9nZbg==}
     dev: true
 
   /electron-publish@24.5.0:
