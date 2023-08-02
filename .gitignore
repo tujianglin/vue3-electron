@@ -15,7 +15,6 @@ dist-ssr
 
 # Editor directories and files
 release*
-dist-electron*
 !.vscode/extensions.json
 .idea
 .DS_Store
