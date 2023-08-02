@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "build:mac": "electron-builder --mac",
-    "build:win": "electron-builder --win --x64",
+    "build:mac": "vue-tsc && vite build && electron-builder --mac",
+    "build:win": "vue-tsc && vite build && electron-builder --win --x64",
     "preview": "vite preview",
     "lint:eslint": "eslint --cache --max-warnings 0  \"{src,mock}/**/*.{vue,ts,tsx}\" --fix",
     "lint:prettier": "prettier --write  \"src/**/*.{js,json,tsx,css,less,scss,vue,html,md}\"",
