@@ -1,11 +1,26 @@
 'use strict';
 Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-const t = require('electron');
-var s = ((n) => ((n.OpenMessagebox = 'open-messagebox'), n))(s || {});
-const o = { [s.OpenMessagebox]: async (n, e) => t.dialog.showMessageBox({ type: e.type || 'info', title: e.title || '', buttons: e.buttons || [], message: e.message || '', noLink: e.noLink || !0 }) };
-function i() {
-  Object.entries(o).forEach(([n, e]) => {
-    t.ipcMain.handle(n, e);
+const electron = require('electron');
+var IpcChannel = /* @__PURE__ */ ((IpcChannel2) => {
+  IpcChannel2['OpenMessagebox'] = 'open-messagebox';
+  IpcChannel2['ReadLocalfile'] = 'read-localfile';
+  return IpcChannel2;
+})(IpcChannel || {});
+const ipcMainHandle = {
+  [IpcChannel.OpenMessagebox]: async (_, arg) => {
+    return electron.dialog.showMessageBox(arg);
+  },
+  [IpcChannel.ReadLocalfile]: async (_, arg) => {
+    return electron.dialog.showOpenDialog({
+      title: '选择文件',
+      properties: ['openFile', 'openDirectory'],
+      ...arg,
+    });
+  },
+};
+function installIpcMain() {
+  Object.entries(ipcMainHandle).forEach(([ipcChannelName, ipcListener]) => {
+    electron.ipcMain.handle(ipcChannelName, ipcListener);
   });
 }
-exports.installIpcMain = i;
+exports.installIpcMain = installIpcMain;

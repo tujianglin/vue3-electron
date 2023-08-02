@@ -1,8 +1,10 @@
-import { IpcMainInvokeEvent, MessageBoxOptions, MessageBoxReturnValue } from 'electron';
+import { IpcMainInvokeEvent, MessageBoxOptions, MessageBoxReturnValue, OpenDialogOptions, OpenDialogReturnValue } from 'electron';
 
 export const enum IpcChannel {
   /* 打开系统弹窗信息 */
   OpenMessagebox = 'open-messagebox',
+  /* 读取本地文件 */
+  ReadLocalfile = 'read-localfile',
 }
 
 type IpcMainEventListener<Send = void, Receive = void> = {
@@ -11,6 +13,7 @@ type IpcMainEventListener<Send = void, Receive = void> = {
 };
 type IpcMainEvent = {
   [IpcChannel.OpenMessagebox]: IpcMainEventListener<MessageBoxOptions, MessageBoxReturnValue>;
+  [IpcChannel.ReadLocalfile]: IpcMainEventListener<OpenDialogOptions, OpenDialogReturnValue>;
 };
 
 type IpcRenderderEvent = {};

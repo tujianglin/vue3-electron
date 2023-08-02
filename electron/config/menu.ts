@@ -1,4 +1,3 @@
-// 这里是定义菜单的地方，详情请查看 https://electronjs.org/docs/api/menu
 import { dialog } from 'electron';
 import { type, arch, release } from 'os';
 import pkg from '../../package.json';
@@ -9,13 +8,28 @@ const menu = [
     submenu: [
       {
         label: '快速重启',
-        accelerator: 'F5',
+        accelerator: 'CmdOrCtrl+R',
         role: 'reload',
       },
       {
         label: '退出',
         accelerator: 'CmdOrCtrl+F4',
         role: 'close',
+      },
+    ],
+  },
+  {
+    label: '编辑',
+    submenu: [
+      {
+        label: '复制',
+        accelerator: 'CmdOrCtrl+C',
+        selector: 'copy:',
+      },
+      {
+        label: '黏贴',
+        accelerator: 'CmdOrCtrl+V',
+        selector: 'paste:',
       },
     ],
   },

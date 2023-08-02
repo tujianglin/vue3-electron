@@ -3,12 +3,13 @@ import { IpcChannel } from '../config/ipc';
 
 const ipcMainHandle = {
   [IpcChannel.OpenMessagebox]: async (_, arg) => {
-    return dialog.showMessageBox({
-      type: arg.type || 'info',
-      title: arg.title || '',
-      buttons: arg.buttons || [],
-      message: arg.message || '',
-      noLink: arg.noLink || true,
+    return dialog.showMessageBox(arg);
+  },
+  [IpcChannel.ReadLocalfile]: async (_, arg) => {
+    return dialog.showOpenDialog({
+      title: '选择文件',
+      properties: ['openFile', 'openDirectory'],
+      ...arg,
     });
   },
 };

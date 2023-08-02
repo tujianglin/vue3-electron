@@ -81,6 +81,7 @@ export class MainInit {
       // mac 环境
       const vueDevToolsPath = join(homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.5.0_1');
       session.defaultSession.loadExtension(vueDevToolsPath);
+      this.loadWindow.webContents.toggleDevTools();
     }
     if (process.env.VITE_DEV_SERVER_URL) {
       this.loadWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
