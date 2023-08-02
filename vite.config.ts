@@ -33,6 +33,10 @@ export default defineConfig(({ mode, command }) => {
           find: /\/#\//,
           replacement: pathResolve('types') + '/',
         },
+        {
+          find: /\/~\//,
+          replacement: pathResolve('electron') + '/',
+        },
       ],
     },
     esbuild: {

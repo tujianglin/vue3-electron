@@ -6,8 +6,8 @@ var __publicField = (obj, key, value) => {
   return value;
 };
 const electron = require("electron");
-const os = require("os");
 const path = require("path");
+const os = require("os");
 const name = "my-vue-app";
 const version = "0.0.0";
 const main = "dist-electron/main.js";
@@ -173,6 +173,26 @@ function info() {
     buttons: ["查看github", "确定"]
   });
 }
+var IpcChannel = /* @__PURE__ */ ((IpcChannel2) => {
+  IpcChannel2["OpenMessagebox"] = "open-messagebox";
+  return IpcChannel2;
+})(IpcChannel || {});
+const ipcMainHandle = {
+  [IpcChannel.OpenMessagebox]: async (_, arg) => {
+    return electron.dialog.showMessageBox({
+      type: arg.type || "info",
+      title: arg.title || "",
+      buttons: arg.buttons || [],
+      message: arg.message || "",
+      noLink: arg.noLink || true
+    });
+  }
+};
+function installIpcMain() {
+  Object.entries(ipcMainHandle).forEach(([ipcChannelName, ipcListener]) => {
+    electron.ipcMain.handle(ipcChannelName, ipcListener);
+  });
+}
 class MainInit {
   constructor() {
     __publicField(this, "loadWindow", null);
@@ -188,6 +208,7 @@ class MainInit {
         ]
       });
     }
+    installIpcMain();
   }
   /* 创建窗口函数 */
   createMainWindow() {

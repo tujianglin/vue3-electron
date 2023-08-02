@@ -30,7 +30,8 @@
     "baseUrl": ".",
     "paths": {
       "/@/*": ["src/*"],
-      "/#/*": ["types/*"]
+      "/#/*": ["types/*"],
+      "/~/*": ["electron/*"]
     }
   },
   "include": [
@@ -45,7 +46,7 @@
     "build/**/*.d.ts",
     "mock/**/*.ts",
     "electron/**/*.ts",
-    "vite.config.ts",
+    "vite.config.ts"
   ],
   "exclude": ["node_modules", "tests/server/**/*.ts", "dist", "**/*.js"]
 }

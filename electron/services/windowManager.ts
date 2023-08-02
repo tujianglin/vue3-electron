@@ -1,8 +1,8 @@
 import { BrowserWindow, Menu, app, dialog, session } from 'electron';
-import menuconfig from '../config/menu';
-
 import { join } from 'path';
 import { homedir } from 'os';
+import menuconfig from '../config/menu';
+import { installIpcMain } from './ipcMain';
 
 export class MainInit {
   public loadWindow: BrowserWindow = null;
@@ -19,6 +19,8 @@ export class MainInit {
         ],
       });
     }
+    // 启动协议
+    installIpcMain();
   }
   /* 创建窗口函数 */
   createMainWindow() {
