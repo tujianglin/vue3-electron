@@ -1,40 +1,24 @@
 'use strict';
 Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-const _const = require('./const.js');
-const mainWindowConfig = {
-  height: 800,
-  useContentSize: true,
-  width: 1700,
-  minWidth: 1366,
-  show: false,
-  frame: _const.IsUseSysTitle,
-  webPreferences: {
-    contextIsolation: false,
-    nodeIntegration: true,
-    webSecurity: false,
-    // 如果是开发模式可以使用devTools
-    devTools: process.env.NODE_ENV === 'development',
-    // 在macos中启用橡皮动画
-    scrollBounce: process.platform === 'darwin',
+const e = require('./const.js'),
+  o = {
+    height: 800,
+    useContentSize: !0,
+    width: 1700,
+    minWidth: 1366,
+    show: !1,
+    frame: e.IsUseSysTitle,
+    webPreferences: { contextIsolation: !1, nodeIntegration: !0, webSecurity: !1, devTools: process.env.NODE_ENV === 'development', scrollBounce: process.platform === 'darwin' },
   },
-};
-const otherWindowConfig = {
-  height: 595,
-  useContentSize: true,
-  width: 1140,
-  autoHideMenuBar: true,
-  minWidth: 842,
-  frame: _const.IsUseSysTitle,
-  show: false,
-  webPreferences: {
-    contextIsolation: false,
-    nodeIntegration: true,
-    webSecurity: false,
-    // 如果是开发模式可以使用devTools
-    devTools: process.env.NODE_ENV === 'development',
-    // 在macos中启用橡皮动画
-    scrollBounce: process.platform === 'darwin',
-  },
-};
-exports.mainWindowConfig = mainWindowConfig;
-exports.otherWindowConfig = otherWindowConfig;
+  t = {
+    height: 595,
+    useContentSize: !0,
+    width: 1140,
+    autoHideMenuBar: !0,
+    minWidth: 842,
+    frame: e.IsUseSysTitle,
+    show: !1,
+    webPreferences: { contextIsolation: !1, nodeIntegration: !0, webSecurity: !1, devTools: process.env.NODE_ENV === 'development', scrollBounce: process.platform === 'darwin' },
+  };
+exports.mainWindowConfig = o;
+exports.otherWindowConfig = t;
