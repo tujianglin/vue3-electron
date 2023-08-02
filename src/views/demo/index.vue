@@ -1,5 +1,5 @@
 <script lang="tsx">
-  import { defineComponent, onMounted, reactive, ref, watch } from 'vue';
+  import { defineComponent, onMounted, reactive, ref } from 'vue';
   import { ElButton } from 'element-plus';
   // import { invoke } from '/~/utils/ipcRenderer';
   // import { IpcChannel } from '/~/config/ipc';
@@ -12,7 +12,7 @@
         suffix: '',
         value: '',
       });
-      const rootdir = ref(['/Desktop']);
+      const rootdir = ref([]);
       const filterFiles = ref();
       const image = ['jpg', 'png', 'gif', 'svg', 'jpeg'];
       const video = ['mp4'];
@@ -62,19 +62,9 @@
           filterFiles.value = files.filter((file) => !file.name.startsWith('.'));
         });
       };
-      watch(
-        () => rootdir.value,
-        (val) => {
-          console.log(val);
-        },
-        {
-          deep: true,
-        },
-      );
       const handleDblclick = (i) => {
         if (i.isFile()) {
           const path = join(homedir(), `${rootdir.value.join('')}/${i.name}`);
-          console.log(path);
           readFile(path, (err, file) => {
             if (err) return;
             fileState.suffix = path.slice(path.lastIndexOf('.') + 1).toLowerCase();
@@ -104,7 +94,7 @@
           {/* <ElButton onClick={() => process.crash()}>模拟崩溃</ElButton>
           <ElButton onClick={openMainMessage}>系统提示框</ElButton>
           <ElButton onClick={readFiles}>选择文件</ElButton> */}
-          <ElButton disabled={rootdir.value.length <= 1} type={'primary'} onClick={prevFolder}>
+          <ElButton disabled={rootdir.value.length === 0} type={'primary'} onClick={prevFolder}>
             上一级
           </ElButton>
           <div class="preview-box">
