@@ -18,6 +18,14 @@ const Home: AppRouteModule[] = [
         },
         component: () => import('/@/views/demo/index.vue'),
       },
+      {
+        path: 'editor',
+        name: 'Editor',
+        meta: {
+          title: '首页',
+        },
+        component: () => import('/@/views/editor/index.vue'),
+      },
     ],
   },
 ];

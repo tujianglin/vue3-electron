@@ -1,18 +1,18 @@
 'use strict';
 Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-const t = !0,
-  e = !1,
-  o = 25565,
-  s = 'http://umbrella22.github.io/electron-vite-template',
-  l = 'update-config',
-  r = !1,
-  i = !0,
-  a = 'hot-update';
-exports.BuiltInServerPort = o;
-exports.DisableF12 = i;
-exports.HotUpdateFolder = a;
-exports.IsUseSysTitle = e;
-exports.UseStartupChart = t;
-exports.hotPublishConfigName = l;
-exports.hotPublishUrl = s;
-exports.openDevTools = r;
+const UseStartupChart = true;
+const IsUseSysTitle = false;
+const BuiltInServerPort = 25565;
+const hotPublishUrl = 'http://umbrella22.github.io/electron-vite-template';
+const hotPublishConfigName = 'update-config';
+const openDevTools = false;
+const DisableF12 = true;
+const HotUpdateFolder = 'hot-update';
+exports.BuiltInServerPort = BuiltInServerPort;
+exports.DisableF12 = DisableF12;
+exports.HotUpdateFolder = HotUpdateFolder;
+exports.IsUseSysTitle = IsUseSysTitle;
+exports.UseStartupChart = UseStartupChart;
+exports.hotPublishConfigName = hotPublishConfigName;
+exports.hotPublishUrl = hotPublishUrl;
+exports.openDevTools = openDevTools;

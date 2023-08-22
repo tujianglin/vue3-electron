@@ -21,7 +21,7 @@
     "lib": ["dom", "esnext"],
     "noImplicitAny": false,
     "skipLibCheck": true,
-    "types": ["vite/client", "element-plus/global"],
+    "types": ["vite/client"],
     "removeComments": true,
     "strictPropertyInitialization": false,
     "strictNullChecks": false,

@@ -17,8 +17,8 @@
     "log": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "dependencies": {
+    "ant-design-vue": "^4.0.1",
     "dayjs": "^1.11.9",
-    "element-plus": "^2.3.8",
     "vue": "^3.2.47",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.4"

@@ -1,15 +1,15 @@
 <script lang="tsx">
-  import { ElConfigProvider } from 'element-plus';
+  import { ConfigProvider } from 'ant-design-vue';
   import { defineComponent } from 'vue';
   import { RouterView } from 'vue-router';
-  import zhCn from 'element-plus/dist/locale/zh-cn.mjs';
+  import zhCN from 'ant-design-vue/es/locale/zh_CN';
   import 'dayjs/locale/zh-cn';
   export default defineComponent({
     setup() {
       return () => (
-        <ElConfigProvider locale={zhCn}>
+        <ConfigProvider locale={zhCN}>
           <RouterView></RouterView>
-        </ElConfigProvider>
+        </ConfigProvider>
       );
     },
   });
