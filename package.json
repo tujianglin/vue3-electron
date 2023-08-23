@@ -17,6 +17,7 @@
     "log": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "dependencies": {
+    "@ckpack/vue-color": "^1.5.0",
     "ant-design-vue": "^4.0.1",
     "dayjs": "^1.11.9",
     "vue": "^3.2.47",
@@ -41,6 +42,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.15.1",
     "husky": "^8.0.3",
+    "less": "^4.2.0",
     "lint-staged": "^13.2.3",
     "postcss": "^8.4.27",
     "postcss-html": "^1.5.0",
@@ -55,6 +57,7 @@
     "stylelint-config-standard-scss": "^10.0.0",
     "stylelint-order": "^6.0.3",
     "typescript": "^5.0.2",
+    "unocss": "^0.55.2",
     "vite": "^4.3.9",
     "vite-plugin-electron": "^0.12.0",
     "vite-plugin-electron-renderer": "^0.14.5",

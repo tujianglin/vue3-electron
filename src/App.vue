@@ -7,7 +7,7 @@
   export default defineComponent({
     setup() {
       return () => (
-        <ConfigProvider locale={zhCN}>
+        <ConfigProvider locale={zhCN} componentSize={'small'}>
           <RouterView></RouterView>
         </ConfigProvider>
       );

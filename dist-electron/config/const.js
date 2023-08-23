@@ -1,13 +1,13 @@
-'use strict';
-Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+"use strict";
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const UseStartupChart = true;
 const IsUseSysTitle = false;
 const BuiltInServerPort = 25565;
-const hotPublishUrl = 'http://umbrella22.github.io/electron-vite-template';
-const hotPublishConfigName = 'update-config';
+const hotPublishUrl = "http://umbrella22.github.io/electron-vite-template";
+const hotPublishConfigName = "update-config";
 const openDevTools = false;
 const DisableF12 = true;
-const HotUpdateFolder = 'hot-update';
+const HotUpdateFolder = "hot-update";
 exports.BuiltInServerPort = BuiltInServerPort;
 exports.DisableF12 = DisableF12;
 exports.HotUpdateFolder = HotUpdateFolder;

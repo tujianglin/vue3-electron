@@ -6,7 +6,6 @@
     "moduleResolution": "node",
     "strict": true,
     "noLib": false,
-    "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strictFunctionTypes": false,

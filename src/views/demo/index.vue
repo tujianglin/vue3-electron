@@ -1,8 +1,14 @@
 <script lang="tsx">
-  import { defineComponent } from 'vue';
+  import { defineComponent, ref } from 'vue';
+  import { ColorPicker } from '/@/components';
   export default defineComponent({
     setup() {
-      return () => <div>111</div>;
+      const color = ref('#000000');
+      return () => (
+        <div>
+          <ColorPicker v-model:value={color.value}></ColorPicker>
+        </div>
+      );
     },
   });
 </script>
