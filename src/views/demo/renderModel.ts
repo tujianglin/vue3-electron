@@ -4,10 +4,21 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
-interface LoadMolel {
+import { getAssetsFile } from '/@/utils';
+import { fragmentShader, vertexShader } from '/@/config/constants';
+
+type FileType = 'glb' | 'gltf' | 'fbx' | 'obj';
+
+export interface LoadMolel {
   filePath?: string;
-  fileType?: string;
+  fileType?: FileType;
   scale?: any;
   position?: any;
 }
@@ -46,6 +57,17 @@ class renderModel {
   spotLight: THREE.SpotLight;
   // 聚光灯辅助线
   spotLightHelper: THREE.SpotLightHelper;
+  // 效果合成器
+  effectComposer: EffectComposer;
+  outlinePass: OutlinePass;
+  // 辉光渲染器
+  unrealBloomPass: UnrealBloomPass;
+  glowComposer: EffectComposer;
+
+  // 鼠标位置
+  mouse = new THREE.Vector2();
+  // 碰撞检测
+  raycaster = new THREE.Raycaster();
 
   constructor(selector) {
     this.container = document.querySelector(selector);
@@ -62,11 +84,16 @@ class renderModel {
       this.initControls();
       // 创建灯光
       this.createLight();
+      const load = await this.setModel({ filePath: getAssetsFile('7.glb'), fileType: 'glb' });
+      // 创建效果合成器
+      this.createEffectComposer();
       // 监听场景大小
       this.onWindowResize();
       // 场景渲染
       this.sceneAnimation();
-      resolve(true);
+      // 鼠标事件
+      this.addEvenListMouseLiatener();
+      resolve(load);
     });
   }
   /**
@@ -107,7 +134,6 @@ class renderModel {
     const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
     const room = new RoomEnvironment();
     this.scene.environment = pmremGenerator.fromScene(room, 0.04).texture;
-    this.scene.background = new THREE.Color(0xffffff);
   }
   /**
    * 初始化控制器
@@ -123,7 +149,65 @@ class renderModel {
   createLight() {
     // 创建环境光
     this.ambientLight = new THREE.AmbientLight('#fff', 0.8);
-    this.scene.add(this.ambientLight);
+    // this.scene.add(this.ambientLight);
+  }
+  /**
+   * 创建效果合成器
+   * @url https://threejs.org/docs/index.html?q=EffectComposer#examples/zh/postprocessing/EffectComposer
+   */
+  createEffectComposer() {
+    const { clientWidth, clientHeight } = this.container;
+    this.effectComposer = new EffectComposer(this.renderer);
+    const renderPass = new RenderPass(this.scene, this.camera);
+    this.effectComposer.addPass(renderPass);
+    this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera);
+    this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00'); // 可见边缘的颜色
+    this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3'); // 不可见边缘的颜色
+    this.outlinePass.edgeGlow = 2.0; // 发光强度
+    this.outlinePass.edgeThickness = 1; // 边缘浓度
+    this.outlinePass.edgeStrength = 4; // 边缘的强度，值越高边框范围越大
+    this.outlinePass.pulsePeriod = 100; // 闪烁频率，值越大频率越低
+    this.effectComposer.addPass(this.outlinePass);
+
+    const effectFXAA = new ShaderPass(FXAAShader);
+    const pixelRatio = this.renderer.getPixelRatio();
+    effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
+    effectFXAA.renderToScreen = true;
+    effectFXAA.needsSwap = true;
+    this.effectComposer.addPass(effectFXAA);
+
+    //创建辉光效果
+    this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0);
+    this.unrealBloomPass.threshold = 0;
+    this.unrealBloomPass.strength = 0;
+    this.unrealBloomPass.radius = 0;
+    this.unrealBloomPass.renderToScreen = false;
+
+    // 辉光合成器
+    this.glowComposer = new EffectComposer(this.renderer);
+    this.glowComposer.renderToScreen = false;
+    this.glowComposer.addPass(new RenderPass(this.scene, this.camera));
+    this.glowComposer.addPass(this.unrealBloomPass);
+
+    // 着色器
+    const shaderPass = new ShaderPass(
+      new THREE.ShaderMaterial({
+        uniforms: {
+          baseTexture: { value: null },
+          bloomTexture: { value: this.glowComposer.renderTarget2.texture },
+          tDiffuse: {
+            value: null,
+          },
+        },
+        vertexShader,
+        fragmentShader,
+        defines: {},
+      }),
+      'baseTexture',
+    );
+    shaderPass.renderToScreen = true;
+    shaderPass.needsSwap = true;
+    this.effectComposer.addPass(shaderPass);
   }
   /**
    * 监听浏览器尺寸变化
@@ -144,7 +228,7 @@ class renderModel {
    * @returns
    */
   onSwitchModel(model: LoadMolel) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<{ load: boolean; filePath: string }>(async (resolve, reject) => {
       try {
         const load = await this.setModel(model);
         this.renderer.toneMappingExposure = 3;
@@ -155,11 +239,28 @@ class renderModel {
     });
   }
   /**
+   * 鼠标点击模型
+   */
+  onMouseClickModel(e: MouseEvent) {
+    const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container;
+    console.log(e);
+    this.mouse.x = ((e.clientX - offsetLeft) / clientWidth) * 2 - 1;
+    this.mouse.y = -((e.clientY - offsetTop) / clientHeight) * 2 + 1;
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObjects(this.scene.children).filter((item: any) => item.object.isMesh);
+    if (intersects.length > 0) {
+      const intersectedObject = intersects[0].object;
+      this.outlinePass.selectedObjects = [intersectedObject];
+    } else {
+      this.outlinePass.selectedObjects = [];
+    }
+  }
+  /**
    * 加载模型
    * @param {Object}
    */
   setModel = ({ filePath, fileType, scale, position }: LoadMolel) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       const loader = this.fileLoaderMap[fileType] as GLTFLoader;
       loader.load(
         filePath,
@@ -214,8 +315,15 @@ class renderModel {
   sceneAnimation = () => {
     requestAnimationFrame(this.sceneAnimation);
     this.controls.update();
-    this.renderer.render(this.scene, this.camera);
+    this.glowComposer.render();
+    this.effectComposer.render();
   };
+  /**
+   * 鼠标事件
+   */
+  addEvenListMouseLiatener() {
+    this.container.addEventListener('click', (e) => this.onMouseClickModel(e));
+  }
 }
 
 export default renderModel;

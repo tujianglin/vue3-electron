@@ -4,12 +4,13 @@
   import ConfigPanel from './components/ConfigPanel/index.vue';
   import Content from './components/Content/index.vue';
   import { useModelStore } from '/@/store/modules/model';
+  import { LoadMolel } from './renderModel';
   export default defineComponent({
     setup() {
       const modelStore = useModelStore();
       const customRequest: UploadProps['customRequest'] = async ({ file }) => {
         const filePath = URL.createObjectURL(file as Blob);
-        const model = {
+        const model: LoadMolel = {
           filePath,
           fileType: 'glb',
         };
@@ -23,7 +24,12 @@
           <Layout.Header class="!h-12"></Layout.Header>
           <Layout>
             <Layout.Sider width="300">
-              <Upload customRequest={customRequest}>
+              <Upload
+                customRequest={customRequest}
+                v-slots={{
+                  itemRender: () => <div></div>,
+                }}
+              >
                 <Button>上传</Button>
               </Upload>
             </Layout.Sider>
