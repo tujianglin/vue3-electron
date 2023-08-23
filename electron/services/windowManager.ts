@@ -67,8 +67,8 @@ export class MainInit {
   /* 加载窗口 */
   loadingWindow() {
     this.loadWindow = new BrowserWindow({
-      width: 1920,
-      height: 1080,
+      width: 3456,
+      height: 2234,
       title: 'Main window',
       webPreferences: {
         nodeIntegration: true,

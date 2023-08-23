@@ -28,8 +28,12 @@
 </script>
 <style lang="less">
   .color-picker {
+    padding-top: 0;
     .ant-popover-inner {
       padding: 0;
+    }
+    .ant-popover-arrow {
+      display: none;
     }
   }
 </style>

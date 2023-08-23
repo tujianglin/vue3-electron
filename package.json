@@ -17,9 +17,13 @@
     "log": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^6.1.0",
     "@ckpack/vue-color": "^1.5.0",
+    "@types/three": "^0.155.1",
     "ant-design-vue": "^4.0.1",
     "dayjs": "^1.11.9",
+    "pinia": "^2.1.6",
+    "three": "^0.155.0",
     "vue": "^3.2.47",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.4"
