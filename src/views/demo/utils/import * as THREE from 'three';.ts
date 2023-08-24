@@ -3,16 +3,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
-
 import { getAssetsFile } from '/@/utils';
-import { fragmentShader, vertexShader } from '/@/config/constants';
 
 type FileType = 'glb' | 'gltf' | 'fbx' | 'obj';
 
@@ -32,8 +25,14 @@ class renderModel {
   camera: THREE.PerspectiveCamera;
   // 场景
   scene: THREE.Scene;
+  // 辅助场景
+  sceneHelpers = new THREE.Scene();
   // 控制器
   controls: OrbitControls;
+  // 变换控制器
+  transformControls: TransformControls;
+  box = new THREE.Box3();
+  selectionBox = new THREE.Box3Helper(this.box);
   // 模型
   model: any;
   // 支持文件加载类型
@@ -57,12 +56,6 @@ class renderModel {
   spotLight: THREE.SpotLight;
   // 聚光灯辅助线
   spotLightHelper: THREE.SpotLightHelper;
-  // 效果合成器
-  effectComposer: EffectComposer;
-  outlinePass: OutlinePass;
-  // 辉光渲染器
-  unrealBloomPass: UnrealBloomPass;
-  glowComposer: EffectComposer;
 
   // 鼠标位置
   mouse = new THREE.Vector2();
@@ -155,60 +148,7 @@ class renderModel {
    * 创建效果合成器
    * @url https://threejs.org/docs/index.html?q=EffectComposer#examples/zh/postprocessing/EffectComposer
    */
-  createEffectComposer() {
-    const { clientWidth, clientHeight } = this.container;
-    this.effectComposer = new EffectComposer(this.renderer);
-    const renderPass = new RenderPass(this.scene, this.camera);
-    this.effectComposer.addPass(renderPass);
-    this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera);
-    this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00'); // 可见边缘的颜色
-    this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3'); // 不可见边缘的颜色
-    this.outlinePass.edgeGlow = 2.0; // 发光强度
-    this.outlinePass.edgeThickness = 1; // 边缘浓度
-    this.outlinePass.edgeStrength = 4; // 边缘的强度，值越高边框范围越大
-    this.outlinePass.pulsePeriod = 100; // 闪烁频率，值越大频率越低
-    this.effectComposer.addPass(this.outlinePass);
-
-    const effectFXAA = new ShaderPass(FXAAShader);
-    const pixelRatio = this.renderer.getPixelRatio();
-    effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
-    effectFXAA.renderToScreen = true;
-    effectFXAA.needsSwap = true;
-    this.effectComposer.addPass(effectFXAA);
-
-    //创建辉光效果
-    this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0);
-    this.unrealBloomPass.threshold = 0;
-    this.unrealBloomPass.strength = 0;
-    this.unrealBloomPass.radius = 0;
-    this.unrealBloomPass.renderToScreen = false;
-
-    // 辉光合成器
-    this.glowComposer = new EffectComposer(this.renderer);
-    this.glowComposer.renderToScreen = false;
-    this.glowComposer.addPass(new RenderPass(this.scene, this.camera));
-    this.glowComposer.addPass(this.unrealBloomPass);
-
-    // 着色器
-    const shaderPass = new ShaderPass(
-      new THREE.ShaderMaterial({
-        uniforms: {
-          baseTexture: { value: null },
-          bloomTexture: { value: this.glowComposer.renderTarget2.texture },
-          tDiffuse: {
-            value: null,
-          },
-        },
-        vertexShader,
-        fragmentShader,
-        defines: {},
-      }),
-      'baseTexture',
-    );
-    shaderPass.renderToScreen = true;
-    shaderPass.needsSwap = true;
-    this.effectComposer.addPass(shaderPass);
-  }
+  createEffectComposer() {}
   /**
    * 监听浏览器尺寸变化
    */
@@ -243,16 +183,24 @@ class renderModel {
    */
   onMouseClickModel(e: MouseEvent) {
     const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container;
-    console.log(e);
     this.mouse.x = ((e.clientX - offsetLeft) / clientWidth) * 2 - 1;
     this.mouse.y = -((e.clientY - offsetTop) / clientHeight) * 2 + 1;
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const intersects = this.raycaster.intersectObjects(this.scene.children).filter((item: any) => item.object.isMesh);
     if (intersects.length > 0) {
-      const intersectedObject = intersects[0].object;
-      this.outlinePass.selectedObjects = [intersectedObject];
+      const object = intersects[0].object;
+      this.selectionBox.visible = false;
+      this.transformControls.detach();
+      if (object && object !== this.scene && object !== this.camera) {
+        this.box.setFromObject(object, true);
+        if (this.box.isEmpty() === false) {
+          this.selectionBox.visible = true;
+        }
+        this.transformControls.attach(object);
+      }
+      this.controls.enabled = false;
     } else {
-      this.outlinePass.selectedObjects = [];
+      // this.controls.enabled = true;
     }
   }
   /**
@@ -315,8 +263,11 @@ class renderModel {
   sceneAnimation = () => {
     requestAnimationFrame(this.sceneAnimation);
     this.controls.update();
-    this.glowComposer.render();
-    this.effectComposer.render();
+    this.renderer.render(this.scene, this.camera);
+
+    this.renderer.autoClear = false;
+    this.renderer.render(this.sceneHelpers, this.camera);
+    this.renderer.autoClear = true;
   };
   /**
    * 鼠标事件

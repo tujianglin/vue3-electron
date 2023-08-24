@@ -1,4 +1,8 @@
 'use strict';
 Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-var a = ((e) => ((e.OpenMessagebox = 'open-messagebox'), (e.ReadLocalfile = 'read-localfile'), e))(a || {});
-exports.IpcChannel = a;
+var IpcChannel = /* @__PURE__ */ ((IpcChannel2) => {
+  IpcChannel2['OpenMessagebox'] = 'open-messagebox';
+  IpcChannel2['ReadLocalfile'] = 'read-localfile';
+  return IpcChannel2;
+})(IpcChannel || {});
+exports.IpcChannel = IpcChannel;

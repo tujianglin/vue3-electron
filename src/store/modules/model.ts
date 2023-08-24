@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import renderModel from '/@/views/demo/renderModel';
+import { Editor } from '../../views/demo/utils/Editor';
 
 interface UseModelStore {
-  modelApi: renderModel;
+  modelApi: Editor;
 }
 
 export const useModelStore = defineStore('model', {
