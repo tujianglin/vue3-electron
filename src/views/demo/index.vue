@@ -2,6 +2,7 @@
   import { defineComponent } from 'vue';
   import { Layout, Upload, UploadProps, Button } from 'ant-design-vue';
   import ConfigPanel from './components/ConfigPanel/index.vue';
+  import ScenePanel from './components/ScenePanel/index.vue';
   import Content from './components/Content/index.vue';
   import { useEditorStore } from '/@/store/modules/editor';
   // import { LoadMolel } from './renderModel';
@@ -15,7 +16,7 @@
         <Layout class="h-full">
           <Layout.Header class="!h-12"></Layout.Header>
           <Layout>
-            <Layout.Sider width="300">
+            <Layout.Sider width="300" class="!bg-[#fff]">
               <Upload
                 customRequest={customRequest}
                 v-slots={{
@@ -24,14 +25,7 @@
               >
                 <Button>上传</Button>
               </Upload>
-              <Button
-                type={'primary'}
-                onClick={() => {
-                  modelStore.addModelApi.addBox();
-                }}
-              >
-                正方体
-              </Button>
+              <ScenePanel></ScenePanel>
             </Layout.Sider>
             <Content></Content>
             <ConfigPanel></ConfigPanel>
