@@ -24,6 +24,14 @@
               >
                 <Button>上传</Button>
               </Upload>
+              <Button
+                type={'primary'}
+                onClick={() => {
+                  modelStore.addModelApi.addBox();
+                }}
+              >
+                正方体
+              </Button>
             </Layout.Sider>
             <Content></Content>
             <ConfigPanel></ConfigPanel>

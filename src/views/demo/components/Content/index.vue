@@ -4,7 +4,8 @@
   import { useEditorStore } from '/@/store/modules/editor';
   import { Loader } from '../../utils/Loader';
   import { Editor } from '../../utils/Editor';
-  import { Viewport } from '../../utils/Viewport';
+  import { EditorControls } from '../../utils/EditorControls';
+  import { AddModel } from '../../utils/AddModel';
   export default defineComponent({
     setup() {
       const editorStore = useEditorStore();
@@ -12,11 +13,14 @@
       onMounted(async () => {
         // 编辑器
         const editor = new Editor();
-        // 视图
-        new Viewport(editor);
+        // 控制器
+        new EditorControls(editor);
         // 加载
         const loadApi = new Loader(editor);
+
+        const addModelApi = new AddModel(editor);
         editorStore.loadApi = loadApi;
+        editorStore.addModelApi = addModelApi;
       });
       return () => (
         <Layout.Content>
@@ -32,4 +36,3 @@
     height: 100%;
   }
 </style>
-../../utils/Viewport ../../../../store/modules/editor

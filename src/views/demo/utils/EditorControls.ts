@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Editor } from './Editor';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
-class Viewport {
+class EditorControls {
   editor: Editor;
   // 鼠标位置
   mouse = new THREE.Vector2();
@@ -115,4 +115,4 @@ class Viewport {
   }
 }
 
-export { Viewport };
+export { EditorControls };

@@ -5,9 +5,9 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { Editor } from './Editor';
 
 // 文件支持上传类型
-type FileLoadType = 'glb' | 'gltf' | 'fbx' | 'obj';
+export type FileLoadType = 'glb' | 'gltf' | 'fbx' | 'obj';
 
-type FileLoadMap = {
+export type FileLoadMap = {
   glb: GLTFLoader;
   gltf: GLTFLoader;
   fbx: FBXLoader;

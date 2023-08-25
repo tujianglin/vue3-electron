@@ -84,10 +84,6 @@ class Editor {
     this.sceneHelpers.add(gridHelper);
   }
   /**
-   * 模型
-   */
-
-  /**
    * 键盘事件
    */
   onKeyDown() {
