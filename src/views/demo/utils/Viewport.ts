@@ -1,62 +1,118 @@
 import * as THREE from 'three';
-import { ViewHelper } from 'three/examples/jsm/helpers/ViewHelper';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Editor } from './Editor';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
-class Viewport extends Editor {
-  renderer: THREE.WebGLRenderer;
-  viewHelper: ViewHelper;
-  controls: OrbitControls;
-  transformControls: TransformControls;
-  constructor() {
-    super();
-    // this.viewHelper = new ViewHelper(this.camera, this.container);
-    const grid = new THREE.Group();
-    const grid1 = new THREE.GridHelper(30, 30, 0x888888);
-    grid1.material.color.setHex(0x888888);
-    grid1.material.vertexColors = false;
-    grid1.rotateZ(0.5);
-    grid.add(grid1);
-    this.scene.add(grid);
-    this.initRender();
-    this.initOrbitControls();
-    this.render();
+class Viewport {
+  editor: Editor;
+  // 鼠标位置
+  mouse = new THREE.Vector2();
+  // 抬起位置
+  onUpPosition = new THREE.Vector2();
+  // 按下位置
+  onDownPosition = new THREE.Vector2();
+  // 碰撞检测
+  raycaster = new THREE.Raycaster();
+  box = new THREE.Box3();
+  selectionBox = new THREE.Box3Helper(this.box);
+  selected: THREE.Object3D;
+  constructor(eidtor) {
+    this.editor = eidtor;
+    this.selectionBox.visible = false;
+    this.editor.sceneHelpers.add(this.selectionBox);
+    this.initTransformControls();
   }
-  /**
-   * 初始化渲染器
-   */
-  initRender() {
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // 抗锯齿
-    // 设置屏幕像素比
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    // 渲染尺寸大小
-    const { clientWidth, clientHeight } = this.container;
-    this.renderer.setSize(clientWidth, clientHeight);
-    this.container.appendChild(this.renderer.domElement);
-  }
-  /**
-   * 初始化变换控制器
-   */
   initTransformControls() {
-    this.transformControls = new TransformControls(this.camera, this.container);
-    // this.sceneHelpers.add(this.transformControls);
+    this.editor.transformControls = new TransformControls(this.editor.camera, this.editor.renderer.domElement);
+    this.editor.transformControls.addEventListener('change', () => {
+      const object = this.editor.transformControls.object;
+      if (object) {
+        this.box.setFromObject(object, true);
+      }
+      this.editor.render();
+    });
+    this.editor.transformControls.addEventListener('dragging-changed', (e) => {
+      this.editor.controls.enabled = !e.value;
+    });
+    this.editor.sceneHelpers.add(this.editor.transformControls);
+    // 鼠标点击事件
+    this.editor.container.addEventListener('mousedown', this.onMousedown);
   }
   /**
-   * 初始化轨道控制器
+   * 鼠标按下
+   * @param e
+   * @returns
    */
-  initOrbitControls() {
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enablePan = false;
-  }
-  render = () => {
-    requestAnimationFrame(this.render);
-    this.controls.update();
-    this.renderer.render(this.scene, this.camera);
-    this.renderer.autoClear = false;
-    // this.renderer.render(this.sceneHelpers, this.camera);
-    this.renderer.autoClear = true;
+  onMousedown = (e: MouseEvent) => {
+    if (e.target !== this.editor.renderer.domElement) return;
+    const array = this.getMousePosition(e.clientX, e.clientY);
+    this.onDownPosition.fromArray(array);
+    document.addEventListener('mouseup', this.onMouseup);
   };
+  /**
+   * 鼠标抬起
+   * @param e
+   */
+  onMouseup = (e: MouseEvent) => {
+    const array = this.getMousePosition(e.clientX, e.clientY);
+    this.onUpPosition.fromArray(array);
+    this.handleClick();
+    document.addEventListener('mouseup', this.onMouseup);
+  };
+  /**
+   * 点击事件
+   */
+  handleClick() {
+    if (this.onDownPosition.distanceTo(this.onUpPosition) === 0) {
+      const intersects = this.getIntersects(this.onUpPosition);
+      if (intersects.length) {
+        const object = intersects[0].object;
+        this.select(object);
+      } else {
+        this.select(null);
+      }
+      this.editor.render();
+    }
+  }
+  /**
+   * 选中模型
+   * @param object
+   * @returns
+   */
+  select(object: THREE.Object3D) {
+    if (this.selected === object) return;
+    this.selected = object;
+    this.selectionBox.visible = false;
+    this.editor.transformControls.detach();
+    if (object && object !== this.editor.scene && object !== this.editor.camera) {
+      this.box.setFromObject(object, true);
+      if (!this.box.isEmpty()) {
+        this.selectionBox.visible = true;
+      }
+      this.editor.transformControls.attach(object);
+    }
+    this.editor.render();
+  }
+  /**
+   * 满足碰撞检测的模型
+   * @param point
+   * @returns
+   */
+  getIntersects(point: THREE.Vector2) {
+    this.mouse.set(point.x * 2 - 1, -(point.y * 2) + 1);
+    this.raycaster.setFromCamera(this.mouse, this.editor.camera);
+    const objects = [];
+    this.editor.scene.traverseVisible((child) => {
+      objects.push(child);
+    });
+    return this.raycaster.intersectObjects(objects, false);
+  }
+  /**
+   * 获取鼠标位置
+   */
+  getMousePosition(x, y) {
+    const rect = this.editor.container.getBoundingClientRect();
+    return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
+  }
 }
 
 export { Viewport };
