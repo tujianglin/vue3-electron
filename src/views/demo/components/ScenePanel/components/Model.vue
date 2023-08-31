@@ -5,7 +5,7 @@
   export default defineComponent({
     setup() {
       const editorStore = useEditorStore();
-      const models = [{ label: '正方体', value: () => editorStore.addModelApi.addBox() }];
+      const models = [{ label: '正方体', value: () => editorStore.modelApi.addBox() }];
       return () => (
         <>
           {models.map((i) => (

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+import { signleton } from '/@/utils/singleton';
 
 class Editor {
   // 容器
@@ -8,10 +9,12 @@ class Editor {
   renderer: THREE.WebGLRenderer;
   // 相机
   camera: THREE.PerspectiveCamera;
+  cameras: {};
   // 场景
   scene = new THREE.Scene();
   // 辅助场景
   sceneHelpers = new THREE.Scene();
+  helpers = {};
   // 控制器
   controls: OrbitControls;
   transformControls: TransformControls;
@@ -28,6 +31,7 @@ class Editor {
     // 自适应屏幕
     this.onWindowResize();
     this.onKeyDown();
+    console.log(this);
   }
   /**
    * 渲染器
@@ -53,8 +57,9 @@ class Editor {
    */
   initCamera() {
     const { clientWidth, clientHeight } = this.container;
-    this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 100);
+    this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.01, 1000);
     this.camera.position.set(0, 5, 10);
+    this.camera.lookAt(new THREE.Vector3());
   }
   /**
    * 灯光
@@ -119,6 +124,30 @@ class Editor {
       this.render();
     });
   }
+  addObject = (object: THREE.Object3D) => {
+    object.traverse((child) => {
+      this.addHelper(child);
+    });
+    this.scene.add(object);
+  };
+  addHelper = (object, helper?) => {
+    const geometry = new THREE.SphereGeometry(2, 4, 2);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
+    if (!helper) {
+      if ((object as THREE.DirectionalLight).isDirectionalLight) {
+        helper = new THREE.DirectionalLightHelper(object, 1);
+      }
+      const picker = new THREE.Mesh(geometry, material);
+      picker.name = 'picker';
+      picker.userData.object = object;
+      console.log(helper);
+      helper?.add(picker);
+    }
+    this.sceneHelpers.add(helper);
+    this.helpers[object.id] = helper;
+    // console.log(camera);
+    // this.editor.cameras[camera.uuid] = camera;
+  };
   render = () => {
     requestAnimationFrame(this.render);
     this.renderer.render(this.scene, this.camera);
@@ -128,4 +157,6 @@ class Editor {
   };
 }
 
-export { Editor };
+const signleEditor = signleton<Editor>(Editor);
+
+export { Editor, signleEditor };

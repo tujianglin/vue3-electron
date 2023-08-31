@@ -1,9 +1,8 @@
 import * as THREE from 'three';
-import { Editor } from './Editor';
+import { signleEditor } from './Editor';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
-class EditorControls {
-  editor: Editor;
+class EditorControls extends signleEditor {
   // 鼠标位置
   mouse = new THREE.Vector2();
   // 抬起位置
@@ -15,35 +14,40 @@ class EditorControls {
   box = new THREE.Box3();
   selectionBox = new THREE.Box3Helper(this.box);
   selected: THREE.Object3D;
-  constructor(eidtor) {
-    this.editor = eidtor;
+  constructor() {
+    super();
     this.selectionBox.visible = false;
-    this.editor.sceneHelpers.add(this.selectionBox);
+    this.sceneHelpers.add(this.selectionBox);
     this.initTransformControls();
   }
-  initTransformControls() {
-    this.editor.transformControls = new TransformControls(this.editor.camera, this.editor.renderer.domElement);
-    this.editor.transformControls.addEventListener('change', () => {
-      const object = this.editor.transformControls.object;
+  initTransformControls = () => {
+    this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
+    this.transformControls.addEventListener('change', () => {
+      const object = this.transformControls.object;
       if (object) {
         this.box.setFromObject(object, true);
+        const helper = this.helpers[object.id];
+        console.log(this.helpers, object.id);
+        if (helper && !helper.isSkeletonHelper) {
+          helper.update();
+        }
       }
-      this.editor.render();
+      this.render();
     });
-    this.editor.transformControls.addEventListener('dragging-changed', (e) => {
-      this.editor.controls.enabled = !e.value;
+    this.transformControls.addEventListener('dragging-changed', (e) => {
+      this.controls.enabled = !e.value;
     });
-    this.editor.sceneHelpers.add(this.editor.transformControls);
+    this.sceneHelpers.add(this.transformControls);
     // 鼠标点击事件
-    this.editor.container.addEventListener('mousedown', this.onMousedown);
-  }
+    this.container.addEventListener('mousedown', this.onMousedown);
+  };
   /**
    * 鼠标按下
    * @param e
    * @returns
    */
   onMousedown = (e: MouseEvent) => {
-    if (e.target !== this.editor.renderer.domElement) return;
+    if (e.target !== this.renderer.domElement) return;
     const array = this.getMousePosition(e.clientX, e.clientY);
     this.onDownPosition.fromArray(array);
     document.addEventListener('mouseup', this.onMouseup);
@@ -61,7 +65,7 @@ class EditorControls {
   /**
    * 点击事件
    */
-  handleClick() {
+  handleClick = () => {
     if (this.onDownPosition.distanceTo(this.onUpPosition) === 0) {
       const intersects = this.getIntersects(this.onUpPosition);
       if (intersects.length) {
@@ -70,49 +74,52 @@ class EditorControls {
       } else {
         this.select(null);
       }
-      this.editor.render();
+      this.render();
     }
-  }
+  };
   /**
    * 选中模型
    * @param object
    * @returns
    */
-  select(object: THREE.Object3D) {
+  select = (object: THREE.Object3D) => {
     if (this.selected === object) return;
     this.selected = object;
     this.selectionBox.visible = false;
-    this.editor.transformControls.detach();
-    if (object && object !== this.editor.scene && object !== this.editor.camera) {
+    this.transformControls.detach();
+    if (object && object !== this.scene && object !== this.camera) {
       this.box.setFromObject(object, true);
       if (!this.box.isEmpty()) {
         this.selectionBox.visible = true;
       }
-      this.editor.transformControls.attach(object);
+      this.transformControls.attach(object);
     }
-    this.editor.render();
-  }
+    this.render();
+  };
   /**
    * 满足碰撞检测的模型
    * @param point
    * @returns
    */
-  getIntersects(point: THREE.Vector2) {
+  getIntersects = (point: THREE.Vector2) => {
     this.mouse.set(point.x * 2 - 1, -(point.y * 2) + 1);
-    this.raycaster.setFromCamera(this.mouse, this.editor.camera);
+    this.raycaster.setFromCamera(this.mouse, this.camera);
     const objects = [];
-    this.editor.scene.traverseVisible((child) => {
+    this.scene.traverseVisible((child) => {
       objects.push(child);
     });
+    this.sceneHelpers.traverseVisible((child) => {
+      if (child.name === 'picker') objects.push(child);
+    });
     return this.raycaster.intersectObjects(objects, false);
-  }
+  };
   /**
    * 获取鼠标位置
    */
-  getMousePosition(x, y) {
-    const rect = this.editor.container.getBoundingClientRect();
+  getMousePosition = (x, y) => {
+    const rect = this.container.getBoundingClientRect();
     return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
-  }
+  };
 }
 
 export { EditorControls };

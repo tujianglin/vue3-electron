@@ -1,30 +1,31 @@
 <script lang="tsx">
-  import { defineComponent, onMounted, ref } from 'vue';
+  import { defineComponent, onMounted } from 'vue';
   import { Layout } from 'ant-design-vue';
   import { useEditorStore } from '/@/store/modules/editor';
   import { Loader } from '../../utils/Loader';
-  import { Editor } from '../../utils/Editor';
+  import { signleEditor } from '../../utils/Editor';
   import { EditorControls } from '../../utils/EditorControls';
   import { AddModel } from '../../utils/AddModel';
+  import { AddLight } from '../../utils/AddLight';
   export default defineComponent({
     setup() {
       const editorStore = useEditorStore();
-      const model = ref<HTMLDivElement>();
-      onMounted(async () => {
+      onMounted(() => {
         // 编辑器
-        const editor = new Editor();
+        new signleEditor();
         // 控制器
-        new EditorControls(editor);
+        new EditorControls();
         // 加载
-        const loadApi = new Loader(editor);
-
-        const addModelApi = new AddModel(editor);
+        const loadApi = new Loader();
+        const modelApi = new AddModel();
+        const lightApi = new AddLight();
         editorStore.loadApi = loadApi;
-        editorStore.addModelApi = addModelApi;
+        editorStore.modelApi = modelApi;
+        editorStore.lightApi = lightApi;
       });
       return () => (
         <Layout.Content>
-          <div id="editor" ref={model}></div>
+          <div id="editor"></div>
         </Layout.Content>
       );
     },
